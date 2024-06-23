@@ -1,0 +1,51 @@
+---
+title: "Week 5 Visualizations Activity"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This dataset shows the average serving sizes of different kinds of alcohol per person for each country in the world. 
+
+Read data:
+```{r, echo = TRUE}
+#read data
+library(readr)
+drinks <- read.csv("C:\\Users\\lyy03\\OneDrive\\Documents\\Mcdaniel\\ANA 515\\Week 4\\drinks.csv")
+
+```
+Data Cleaning
+```{r, echo = TRUE}
+#data cleaning, some of the countries in this dataset are prohibited to drink legal wise. However, not all the 0 value rows are prohibited to drink, that could be caused by data collection issue. This step aims to keep the countries that are allowed to drink.
+library(dplyr)
+allowed_countries <- c("Monaco", "San Marino","North Korea") ## source:https://en.wikipedia.org/wiki/List_of_countries_with_alcohol_prohibition
+drinks_legal <- drinks %>% filter (!(rowSums(select(., beer_servings, spirit_servings, wine_servings)) == 0 & !country %in% allowed_countries))
+summary(drinks_legal)
+```
+Data Visualization
+
+--------Box Plot-------
+
+```{r,echo=TRUE}
+library(ggplot2)
+par(mfrow = c(1,4))
+
+boxplot(drinks_legal$beer_servings, main = "Beer Servings", ylab = "Servings")
+boxplot(drinks_legal$spirit_servings, main = "Spirit Servings", ylab = "Servings")
+boxplot(drinks_legal$wine_servings, main = "Wine Servings", ylab = "Servings")
+boxplot(drinks_legal$total_litres_of_pure_alcohol, main = "Total Litres of Pure Alcohol", ylab = "Servings")
+```
+
+From the Box Plot, we can see that beer servings, spirit servings and wine servings all show right-skewed distribution, and wine servings has most outliers.
+
+
+
+---Scatter Plot---
+```{r, echo = TRUE}
+library(GGally)
+ggpairs(drinks_legal[, c("beer_servings", "spirit_servings", "wine_servings", "total_litres_of_pure_alcohol")])
+```
+
+From the scatter plot we can tell that, all fields are positive correlated.
